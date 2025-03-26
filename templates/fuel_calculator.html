@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTE Fuel Calculator</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='calculator.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>OTE Fuel Calculator</h1>
+
+        <!-- Display Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-message">
+                    {% for category, message in messages %}
+                        <p><strong>{{ message }}</strong></p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <form id="calculator_form" method="post" action="{{ url_for('calculation') }}" autocomplete="off">
+            <label for="MaxWeight">Max Weight (kg):</label>
+            <input type="number" name="MaxWeight" id="MaxWeight" required autocomplete="off" value="{{ max_weight if max_weight is not none else '' }}">
+            <label for="TandT">Truck and Trailer Weight (kg):</label>
+            <input type="number" name="TandT" id="TandT" required autocomplete="off" value="{{ truck_trailer_weight if truck_trailer_weight is not none else '' }}">
+            <label for="FD">Fuel Density (g/cm³):</label>
+            <input type="number" name="FD" id="FD" step="0.1" required autocomplete="off" value="{{ fuel_density if fuel_density is not none else '' }}">
+            <label for="Temp">Average Temperature (°C):</label>
+            <input type="number" name="Temp" id="Temp" step="0.01" required autocomplete="off" value="{{ avg_temp if avg_temp is not none else '' }}">
+            <input type="submit" value="Calculate">
+            <input type="reset" value="Reset", onclick="resetForm(event)">
+        </form>
+
+        {% if calculation_success == True %}
+            <div class="result" id="result_output">
+                <p><strong>Max Weight:</strong> {{ max_weight }} kg</p>
+                <p><strong>Truck and Trailer Weight:</strong> {{ truck_trailer_weight }} kg</p>
+                <p><strong>Fuel Density:</strong> {{ fuel_density }} g/cm³</p>
+                <p><strong>Average Temperature:</strong> {{ avg_temp }} °C</p>
+                <p><strong>Available Weight:</strong> {{ available_weight }} kg</p>
+                <p><strong>Net Literage (Corrected to 15°C):</strong> {{ net_literage }} L</p>
+                <p><strong>Volume Correction Factor:</strong> {{ correction }}</p>
+                <p><strong>Gross Literage to Request:</strong> {{ gross_literage }} L</p>
+            </div>
+        {% endif %}
+        {% if calculation_success == False %}
+            <div class="result" style="background: #f8d7da; color: #721c24;">
+                <p>{{ error }}</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+        // Reset function for clearing form and results
+        function resetForm() {
+            // Clear form fields manually
+            document.getElementById("calculator_form").reset();
+
+            // Optionally, clear results section (if any)
+            var resultSection = document.getElementById("result_output");
+            if (resultSection) {
+                resultSection.innerHTML = ''; // Clear the results area
+            }
+        }
+    </script>
+
+</body>
+</html>
