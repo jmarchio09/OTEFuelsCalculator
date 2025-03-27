@@ -5,7 +5,8 @@ const urlsToCache = [
     "/static/service-worker.js",
     "/static/manifest.json",
     "/static/icons/icon-192x192.png",
-    "/static/icons/icon-512x512.png"
+    "/static/icons/icon-512x512.png",
+    "/static/icons/favicon.ico"
 ];
 
 // Install event - cache assets
