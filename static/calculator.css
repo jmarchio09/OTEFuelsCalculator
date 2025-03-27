@@ -53,7 +53,7 @@ input[type="number"], input[type="submit"] {
 }
 
 input[type="submit"] {
-    background-color: #28a745;
+    background-color: #0d803f;
     color: white;
     cursor: pointer;
     margin-top: 20px;
@@ -84,4 +84,10 @@ input[type="submit"] {
 
 .result hr {
     margin-left: 0; /* Ensures the divider stays aligned */
+}
+
+.logo {
+    display: block;
+    margin: 0 auto -20px; /* Center the logo and give some space below */
+    height: auto;
 }
