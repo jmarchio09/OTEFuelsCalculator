@@ -49,7 +49,7 @@ def calculation():
     available_weight = max_weight - truck_trailer_weight
 
     # Calculate net literage
-    net_literage = available_weight / (fuel_density / 1000.0)
+    net_literage = (available_weight / fuel_density) * 1000.0
 
     # Calculate the new net literage after removing the gross filled literage
     new_net_literage = net_literage - fill_liter * VCF(fuel_density, avg_temp)
@@ -106,5 +106,5 @@ def VCF(density, temperature):
 # End of function definition
 
 if __name__ == '__main__':
-    Flask_App.debug = True
+    Flask_App.debug = False
     Flask_App.run()

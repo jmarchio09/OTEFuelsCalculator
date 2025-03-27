@@ -4,14 +4,15 @@
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OTE Fuel Calculator</title>
+    <title>OTE Fuels Calculator</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='calculator.css') }}">
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
 
 </head>
 <body>
 
     <div class="container">
-        <h1>OTE Fuel Calculator</h1>
+        <h1>OTE Fuels Calculator</h1>
 
         <div id="error-messages"></div>
 
@@ -40,7 +41,7 @@
 
             <label for="FillLiter">Gross Filled Literage (L):</label>
             <input type="number" name="FillLiter" id="FillLiter" required autocomplete="off" value="{{ fill_liter if fill_liter is not none else 0 }}">
-            <label for="AvgTemp">Filled Average Temperature (°C):</label>
+            <label for="AvgTemp">Filled Average Fuel Temperature (°C):</label>
             <input type="number" name="AvgTemp" id="AvgTemp" step="0.01" required autocomplete="off" value="{{ avg_temp if avg_temp is not none else '' }}">
             <input type="submit" value="Calculate">
         </form>
@@ -104,6 +105,16 @@
                 }
             });
         });
+    </script>
+
+    <script>
+        if ("serviceWorker" in navigator) {
+            window.addEventListener("load", function() {
+                navigator.serviceWorker.register("/static/service-worker.js")
+                    .then(reg => console.log("Service Worker registered", reg))
+                    .catch(err => console.log("Service Worker registration failed", err));
+            });
+        }
     </script>
 
 </body>
