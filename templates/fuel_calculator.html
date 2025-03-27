@@ -9,6 +9,12 @@
     <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
     <link rel="icon" href="{{ url_for('static', filename='icons/favicon.ico') }}" type="image/x-icon">
 
+    <!-- For Apple devices (home screen icon) -->
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='icons/icon-192x192.png') }}">
+
+    <!-- For Android and other devices (preferred icon size) -->
+    <link rel="icon" sizes="192x192" href="{{ url_for('static', filename='icons/icon-192x192.png') }}">
+
 </head>
 <body>
 
