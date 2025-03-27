@@ -45,18 +45,18 @@ def calculation():
         return render_template('fuel_calculator.html', max_weight = int(max_weight), truck_trailer_weight = int(truck_trailer_weight), 
                             fuel_density = fuel_density, fuel_temp = fuel_temp, fill_liter = int(fill_liter), avg_temp = avg_temp)
 
+    # Calculate the weight of the fuel already added to the tanker
+    fuel_weight = fill_liter * VCF(fuel_density, avg_temp) * (fuel_density / 1000.0)
+
     # Calculate kg available to carry
-    available_weight = max_weight - truck_trailer_weight
+    available_weight = max_weight - truck_trailer_weight - fuel_weight
 
     # Calculate net literage
     net_literage = (available_weight / fuel_density) * 1000.0
 
-    # Calculate the new net literage after removing the gross filled literage
-    new_net_literage = net_literage - fill_liter * VCF(fuel_density, avg_temp)
-
     # Convert this back to the remaining gross literage to request
     correction = VCF(fuel_density, fuel_temp)
-    gross_literage = new_net_literage / correction
+    gross_literage = net_literage / correction
 
     if gross_literage < 0.0:
         flash("Specified filled literage results in a negative gross literage to request.", "error")
@@ -80,8 +80,7 @@ def calculation():
     )
     
 # End of function definition
-        
-    
+
 # Define a function to calculate the volume correction factor
 # given a density and temperature (in g/m^3 and C) respectively
 # Note: This assumes a known density at 15°C
