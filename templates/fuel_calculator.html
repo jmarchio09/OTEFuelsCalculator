@@ -1,21 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OTE Fuel Calculator</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='calculator.css') }}">
+
 </head>
 <body>
+
     <div class="container">
         <h1>OTE Fuel Calculator</h1>
 
-        <!-- Display Flash Messages -->
+        <div id="error-messages"></div>
+
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
-                <div class="flash-message">
+                <div id="flash-messages">
                     {% for category, message in messages %}
-                        <p><strong>{{ message }}</strong></p>
+                        <p class="flash {{ category }}">{{ message }}</p>
                     {% endfor %}
                 </div>
             {% endif %}
@@ -24,14 +28,21 @@
         <form id="calculator_form" method="post" action="{{ url_for('calculation') }}" autocomplete="off">
             <label for="MaxWeight">Max Weight (kg):</label>
             <input type="number" name="MaxWeight" id="MaxWeight" required autocomplete="off" value="{{ max_weight if max_weight is not none else '' }}">
-            <label for="TandT">Truck and Trailer Weight (kg):</label>
+            <label for="TandT">Truck & Trailer Weight (kg):</label>
             <input type="number" name="TandT" id="TandT" required autocomplete="off" value="{{ truck_trailer_weight if truck_trailer_weight is not none else '' }}">
-            <label for="FD">Fuel Density (between 1-1000 g/cm³):</label>
-            <input type="number" name="FD" id="FD" step="0.1" required autocomplete="off" value="{{ fuel_density if fuel_density is not none else '' }}">
-            <label for="Temp">Current Temperature (°C):</label>
-            <input type="number" name="Temp" id="Temp" step="0.01" required autocomplete="off" value="{{ avg_temp if avg_temp is not none else '' }}">
+            <label for="FuelDensity">Fuel Density (between 100 and 1000 g/cm³):</label>
+            <input type="number" name="FuelDensity" id="FuelDensity" step="0.1" required autocomplete="off" value="{{ fuel_density if fuel_density is not none else '' }}">
+            <label for="FuelTemp">Fuel Temperature (between -50 and 50°C):</label>
+            <input type="number" name="FuelTemp" id="FuelTemp" step="0.01" required autocomplete="off" value="{{ fuel_temp if fuel_temp is not none else '' }}">
+
+            <!-- Horizontal Line with spacing -->
+            <hr class="divider">
+
+            <label for="FillLiter">Gross Filled Literage (L):</label>
+            <input type="number" name="FillLiter" id="FillLiter" required autocomplete="off" value="{{ fill_liter if fill_liter is not none else 0 }}">
+            <label for="AvgTemp">Filled Average Temperature (°C):</label>
+            <input type="number" name="AvgTemp" id="AvgTemp" step="0.01" required autocomplete="off" value="{{ avg_temp if avg_temp is not none else '' }}">
             <input type="submit" value="Calculate">
-            <input type="reset" value="Reset", onclick="resetForm(event)">
         </form>
 
         {% if calculation_success == True %}
@@ -39,32 +50,60 @@
                 <p><strong>Max Weight:</strong> {{ max_weight }} kg</p>
                 <p><strong>Truck and Trailer Weight:</strong> {{ truck_trailer_weight }} kg</p>
                 <p><strong>Fuel Density:</strong> {{ fuel_density }} g/cm³</p>
-                <p><strong>Average Temperature:</strong> {{ avg_temp }} °C</p>
+                <p><strong>Fuel Temperature:</strong> {{ fuel_temp }} °C</p>
                 <p><strong>Available Weight:</strong> {{ available_weight }} kg</p>
                 <p><strong>Net Literage (Corrected to 15°C):</strong> {{ net_literage }} L</p>
                 <p><strong>Volume Correction Factor:</strong> {{ correction }}</p>
+                
+                <!-- Horizontal Line -->
+                <hr class="divider">
+                
+                <p><strong>Total Gross Literage:</strong> {{ gross_literage + fill_liter }} L</p>
+                <p><strong>Filled Literage:</strong> {{ fill_liter }} L</p>
                 <p><strong>Gross Literage to Request:</strong> {{ gross_literage }} L</p>
-            </div>
-        {% endif %}
-        {% if calculation_success == False %}
-            <div class="result" style="background: #f8d7da; color: #721c24;">
-                <p>{{ error }}</p>
             </div>
         {% endif %}
     </div>
 
     <script>
-        // Reset function for clearing form and results
-        function resetForm() {
-            // Clear form fields manually
-            document.getElementById("calculator_form").reset();
+        document.addEventListener("DOMContentLoaded", function() {
+            const form = document.getElementById("calculator_form");
+            const errorContainer = document.getElementById("error-messages");
+    
+            form.addEventListener("submit", function(event) {
+                let errors = [];
+                const maxWeight = parseFloat(document.getElementById("MaxWeight").value);
+                const truckTrailerWeight = parseFloat(document.getElementById("TandT").value);
+                const fuelDensity = parseFloat(document.getElementById("FuelDensity").value);
+                const fuelTemp = parseFloat(document.getElementById("FuelTemp").value);
+                const avgTemp = parseFloat(document.getElementById("AvgTemp").value);
+                const fillLiter = parseFloat(document.getElementById("FillLiter").value);
 
-            // Optionally, clear results section (if any)
-            var resultSection = document.getElementById("result_output");
-            if (resultSection) {
-                resultSection.innerHTML = ''; // Clear the results area
-            }
-        }
+                if (maxWeight <= 0 || truckTrailerWeight <= 0) {
+                    errors.push("All weights must be positive.");
+                } else if (maxWeight <= truckTrailerWeight) {
+                    errors.push("Truck and trailer weight must be less than max weight.");
+                }
+                if (fuelDensity <= 0.0) {
+                    errors.push("Fuel density must be positive.");
+                } else if (fuelDensity < 100.0 || fuelDensity > 1000.0) {
+                    errors.push("Fuel density must be between 100 and 1000 g/cm³.");
+                }
+                if (fuelTemp < -50.0 || fuelTemp > 50.0 || avgTemp < -50.0 || avgTemp > 50.0) {
+                    errors.push("All temperatures must be between -50 and 50°C.");
+                }
+                if (fillLiter < 0.0) {
+                    errors.push("Filled literage must be non-negative.");
+                }
+    
+                if (errors.length > 0) {
+                    event.preventDefault();
+                    errorContainer.innerHTML = errors.map(e => `<p class='error'>${e}</p>`).join('');
+                } else {
+                    errorContainer.innerHTML = "";
+                }
+            });
+        });
     </script>
 
 </body>
