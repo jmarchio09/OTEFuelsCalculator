@@ -1,7 +1,7 @@
 {
   "name": "OTE Fuels Calculator",
-  "short_name": "FuelCalc",
-  "description": "A fuel calculation tool for OTE.",
+  "short_name": "Fuels Calculator",
+  "description": "A fuel calculation tool for Of The Earth Fuel Services.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
