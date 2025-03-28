@@ -50,7 +50,7 @@
             <label for="FillLiter">Gross Filled Literage (L):</label>
             <input type="number" name="FillLiter" id="FillLiter" oninput="limitDigits(this, 8)" required autocomplete="off" value="{{ fill_liter if fill_liter is not none else 0 }}">
             <label for="AvgTemp">Filled Average Fuel Temperature (°C):</label>
-            <input type="number" name="AvgTemp" id="AvgTemp" oninput="limitDigits(this, 8)" step="0.01" required autocomplete="off" value="{{ avg_temp if avg_temp is not none else '' }}">
+            <input type="number" name="AvgTemp" id="AvgTemp" oninput="limitDigits(this, 8)" step="0.01" required autocomplete="off" value="{{ avg_temp if avg_temp is not none else 0.0 }}">
             <input type="submit" value="Calculate">
         </form>
 
