@@ -36,21 +36,21 @@
 
         <form id="calculator_form" method="post" action="{{ url_for('calculation') }}" autocomplete="off">
             <label for="MaxWeight">Max Weight (kg):</label>
-            <input type="number" name="MaxWeight" id="MaxWeight" required autocomplete="off" value="{{ max_weight if max_weight is not none else '' }}">
+            <input type="number" name="MaxWeight" id="MaxWeight" oninput="limitDigits(this, 8)" required autocomplete="off" value="{{ max_weight if max_weight is not none else '' }}">
             <label for="TandT">Truck & Trailer Weight (kg):</label>
-            <input type="number" name="TandT" id="TandT" required autocomplete="off" value="{{ truck_trailer_weight if truck_trailer_weight is not none else '' }}">
+            <input type="number" name="TandT" id="TandT" oninput="limitDigits(this, 8)" required autocomplete="off" value="{{ truck_trailer_weight if truck_trailer_weight is not none else '' }}">
             <label for="FuelDensity">Fuel Density (between 100 and 1000 g/cm³):</label>
-            <input type="number" name="FuelDensity" id="FuelDensity" step="0.1" required autocomplete="off" value="{{ fuel_density if fuel_density is not none else '' }}">
+            <input type="number" name="FuelDensity" id="FuelDensity" oninput="limitDigits(this, 8)" step="0.1" required autocomplete="off" value="{{ fuel_density if fuel_density is not none else '' }}">
             <label for="FuelTemp">Fuel Temperature (between -50 and 50°C):</label>
-            <input type="number" name="FuelTemp" id="FuelTemp" step="0.01" required autocomplete="off" value="{{ fuel_temp if fuel_temp is not none else '' }}">
+            <input type="number" name="FuelTemp" id="FuelTemp" oninput="limitDigits(this, 8)" step="0.01" required autocomplete="off" value="{{ fuel_temp if fuel_temp is not none else '' }}">
 
             <!-- Horizontal Line with spacing -->
             <hr class="divider">
 
             <label for="FillLiter">Gross Filled Literage (L):</label>
-            <input type="number" name="FillLiter" id="FillLiter" required autocomplete="off" value="{{ fill_liter if fill_liter is not none else 0 }}">
+            <input type="number" name="FillLiter" id="FillLiter" oninput="limitDigits(this, 8)" required autocomplete="off" value="{{ fill_liter if fill_liter is not none else 0 }}">
             <label for="AvgTemp">Filled Average Fuel Temperature (°C):</label>
-            <input type="number" name="AvgTemp" id="AvgTemp" step="0.01" required autocomplete="off" value="{{ avg_temp if avg_temp is not none else '' }}">
+            <input type="number" name="AvgTemp" id="AvgTemp" oninput="limitDigits(this, 8)" step="0.01" required autocomplete="off" value="{{ avg_temp if avg_temp is not none else '' }}">
             <input type="submit" value="Calculate">
         </form>
 
@@ -123,6 +123,14 @@
                     .catch(err => console.log("Service Worker registration failed", err));
             });
         }
+    </script>
+
+    <script>
+    function limitDigits(input, maxDigits) {
+        if (input.value.length > maxDigits) {
+            input.value = input.value.slice(0, maxDigits);
+        }
+    }
     </script>
 
 </body>
