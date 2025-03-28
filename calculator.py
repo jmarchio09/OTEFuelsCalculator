@@ -22,34 +22,26 @@ def calculation():
     truck_trailer_weight = float(request.form['TandT'])  
     fuel_density = float(request.form['FuelDensity'])
     fuel_temp = float(request.form['FuelTemp'])
-    fill_liter = float(request.form['FillLiter'])
-    avg_temp = float(request.form["AvgTemp"])
 
     # Validation for inputs
     if max_weight <= 0.0 or truck_trailer_weight <= 0.0:
         return render_template('fuel_calculator.html', max_weight = int(max_weight), truck_trailer_weight = int(truck_trailer_weight), 
-                            fuel_density = fuel_density, fuel_temp = fuel_temp, fill_liter = int(fill_liter), avg_temp = avg_temp)
+                            fuel_density = fuel_density, fuel_temp = fuel_temp)
     elif max_weight <= truck_trailer_weight:
         return render_template('fuel_calculator.html', max_weight = int(max_weight), truck_trailer_weight = int(truck_trailer_weight), 
-                            fuel_density = fuel_density, fuel_temp = fuel_temp, fill_liter = int(fill_liter), avg_temp = avg_temp)
+                            fuel_density = fuel_density, fuel_temp = fuel_temp)
     if fuel_density <= 0.0:
         return render_template('fuel_calculator.html', max_weight = int(max_weight), truck_trailer_weight = int(truck_trailer_weight), 
-                            fuel_density = fuel_density, fuel_temp = fuel_temp, fill_liter = int(fill_liter), avg_temp = avg_temp)
+                            fuel_density = fuel_density, fuel_temp = fuel_temp)
     elif fuel_density < 100.0 or fuel_density > 1000.0:
         return render_template('fuel_calculator.html', max_weight = int(max_weight), truck_trailer_weight = int(truck_trailer_weight), 
-                            fuel_density = fuel_density, fuel_temp = fuel_temp, fill_liter = int(fill_liter), avg_temp = avg_temp)
-    if fuel_temp < -50.0 or fuel_temp > 50.0 or avg_temp < -50.0 or avg_temp > 50.0:
+                            fuel_density = fuel_density, fuel_temp = fuel_temp)
+    if fuel_temp < -50.0 or fuel_temp > 50.0:
         return render_template('fuel_calculator.html', max_weight = int(max_weight), truck_trailer_weight = int(truck_trailer_weight), 
-                            fuel_density = fuel_density, fuel_temp = fuel_temp, fill_liter = int(fill_liter), avg_temp = avg_temp)
-    if fill_liter < 0.0:
-        return render_template('fuel_calculator.html', max_weight = int(max_weight), truck_trailer_weight = int(truck_trailer_weight), 
-                            fuel_density = fuel_density, fuel_temp = fuel_temp, fill_liter = int(fill_liter), avg_temp = avg_temp)
-
-    # Calculate the weight of the fuel already added to the tanker
-    fuel_weight = fill_liter * VCF(fuel_density, avg_temp) * (fuel_density / 1000.0)
+                            fuel_density = fuel_density, fuel_temp = fuel_temp)
 
     # Calculate kg available to carry
-    available_weight = max_weight - truck_trailer_weight - fuel_weight
+    available_weight = max_weight - truck_trailer_weight
 
     # Calculate net literage
     net_literage = (available_weight / fuel_density) * 1000.0
@@ -58,11 +50,6 @@ def calculation():
     correction = VCF(fuel_density, fuel_temp)
     gross_literage = net_literage / correction
 
-    if gross_literage < 0.0:
-        flash("Specified filled literage results in a negative gross literage to request.", "error")
-        return render_template('fuel_calculator.html', max_weight = int(max_weight), truck_trailer_weight = int(truck_trailer_weight), 
-                            fuel_density = fuel_density, fuel_temp = fuel_temp, fill_liter = int(fill_liter), avg_temp = avg_temp)
-
     # Return the variables
     return render_template(
         'fuel_calculator.html',
@@ -70,8 +57,6 @@ def calculation():
         truck_trailer_weight = int(np.round(truck_trailer_weight, 0)),
         fuel_density = np.round(fuel_density, 1),
         fuel_temp = np.round(fuel_temp, 2),
-        fill_liter = int(np.round(fill_liter, 0)),
-        avg_temp = np.round(avg_temp, 2),
         available_weight = int(np.round(available_weight, 0)),
         net_literage = int(np.round(net_literage, 0)),
         correction = np.round(correction, 4),

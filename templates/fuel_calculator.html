@@ -24,16 +24,6 @@
 
         <div id="error-messages"></div>
 
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                <div id="flash-messages">
-                    {% for category, message in messages %}
-                        <p class="flash {{ category }}">{{ message }}</p>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        {% endwith %}
-
         <form id="calculator_form" method="post" action="{{ url_for('calculation') }}" autocomplete="off">
             <label for="MaxWeight">Max Weight (kg):</label>
             <input type="number" name="MaxWeight" id="MaxWeight" oninput="limitDigits(this, 8)" required autocomplete="off" value="{{ max_weight if max_weight is not none else '' }}">
@@ -41,16 +31,8 @@
             <input type="number" name="TandT" id="TandT" oninput="limitDigits(this, 8)" required autocomplete="off" value="{{ truck_trailer_weight if truck_trailer_weight is not none else '' }}">
             <label for="FuelDensity">Fuel Density (between 100 and 1000 g/cm³):</label>
             <input type="number" name="FuelDensity" id="FuelDensity" oninput="limitDigits(this, 8)" step="0.1" required autocomplete="off" value="{{ fuel_density if fuel_density is not none else '' }}">
-            <label for="FuelTemp">Fuel Temperature (between -50 and 50°C):</label>
+            <label for="FuelTemp">Average Fuel Temperature (between -50 and 50°C):</label>
             <input type="number" name="FuelTemp" id="FuelTemp" oninput="limitDigits(this, 8)" step="0.01" required autocomplete="off" value="{{ fuel_temp if fuel_temp is not none else '' }}">
-
-            <!-- Horizontal Line with spacing -->
-            <hr class="divider">
-
-            <label for="FillLiter">Gross Filled Literage (L):</label>
-            <input type="number" name="FillLiter" id="FillLiter" oninput="limitDigits(this, 8)" required autocomplete="off" value="{{ fill_liter if fill_liter is not none else 0 }}">
-            <label for="AvgTemp">Filled Average Fuel Temperature (°C):</label>
-            <input type="number" name="AvgTemp" id="AvgTemp" oninput="limitDigits(this, 8)" step="0.01" required autocomplete="off" value="{{ avg_temp if avg_temp is not none else 0.0 }}">
             <input type="submit" value="Calculate">
         </form>
 
@@ -59,16 +41,13 @@
                 <p><strong>Max Weight:</strong> {{ max_weight }} kg</p>
                 <p><strong>Truck & Trailer Tare Weight:</strong> {{ truck_trailer_weight }} kg</p>
                 <p><strong>Fuel Density:</strong> {{ fuel_density }} g/cm³</p>
-                <p><strong>Fuel Temperature:</strong> {{ fuel_temp }} °C</p>
+                <p><strong>Average Fuel Temperature:</strong> {{ fuel_temp }} °C</p>
                 <p><strong>Available Weight:</strong> {{ available_weight }} kg</p>
                 <p><strong>Net Literage (Corrected to 15°C):</strong> {{ net_literage }} L</p>
                 <p><strong>Volume Correction Factor:</strong> {{ correction }}</p>
                 
                 <!-- Horizontal Line -->
                 <hr class="divider">
-                
-                <p><strong>Total Gross Literage:</strong> {{ gross_literage + fill_liter }} L</p>
-                <p><strong>Filled Literage:</strong> {{ fill_liter }} L</p>
                 <p><strong>Gross Literage to Request:</strong> {{ gross_literage }} L</p>
             </div>
         {% endif %}
@@ -85,8 +64,6 @@
                 const truckTrailerWeight = parseFloat(document.getElementById("TandT").value);
                 const fuelDensity = parseFloat(document.getElementById("FuelDensity").value);
                 const fuelTemp = parseFloat(document.getElementById("FuelTemp").value);
-                const avgTemp = parseFloat(document.getElementById("AvgTemp").value);
-                const fillLiter = parseFloat(document.getElementById("FillLiter").value);
 
                 if (maxWeight <= 0 || truckTrailerWeight <= 0) {
                     errors.push("All weights must be positive.");
@@ -98,11 +75,8 @@
                 } else if (fuelDensity < 100.0 || fuelDensity > 1000.0) {
                     errors.push("Fuel density must be between 100 and 1000 g/cm³.");
                 }
-                if (fuelTemp < -50.0 || fuelTemp > 50.0 || avgTemp < -50.0 || avgTemp > 50.0) {
-                    errors.push("All temperatures must be between -50 and 50°C.");
-                }
-                if (fillLiter < 0.0) {
-                    errors.push("Filled literage must be non-negative.");
+                if (fuelTemp < -50.0 || fuelTemp > 50.0) {
+                    errors.push("Fuel temperature must be between -50 and 50°C.");
                 }
     
                 if (errors.length > 0) {
