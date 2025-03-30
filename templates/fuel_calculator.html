@@ -117,7 +117,7 @@
             {% if calculation_success_spread == True %}
                 <div class="result_spread" id="result_spread">
                     <div class="table-container">
-                        <table>
+                        <table id="OutputTable">
                             <thead>
                                 <tr>
                                     <th style="background-color: #e9ecef;">Gross Literage</th>
@@ -139,6 +139,9 @@
                         </table>
                     </div>
                 </div>
+                
+                <button type="submit" onclick="printTable()">Print Spreadsheet</button>
+
             {% endif %}
 
         </form>
@@ -174,6 +177,13 @@
 
         singleBtn.addEventListener('click', () => switchForm(true));
         spreadsheetBtn.addEventListener('click', () => switchForm(false));
+    </script>
+
+    <!-- JavaScript for printing the table -->
+    <script>
+        function printTable() {
+            window.print();
+        }
     </script>
 
     <script>
