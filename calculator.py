@@ -10,11 +10,10 @@ Flask_App.secret_key = 'a_random_secret_key'
 @Flask_App.route('/', methods = ['GET'])
 def fuel_calculator():
     # Displays the fuel_calculator page accessible at '/'
-    return render_template('fuel_calculator.html', max_weight = None, truck_trailer_weight = None, fuel_density = None,
-                           fuel_temp = None, fill_liter = None, avg_temp = None)
+    return render_template('fuel_calculator.html', single_class = 'active')
 
-@Flask_App.route('/calculation/', methods = ['POST'])
-def calculation():
+@Flask_App.route('/calculate-single/', methods = ['POST'])
+def calculate_single():
 
     # request.form looks for:
     # html tags with matching "name= "
@@ -22,23 +21,13 @@ def calculation():
     truck_trailer_weight = float(request.form['TandT'])  
     fuel_density = float(request.form['FuelDensity'])
     fuel_temp = float(request.form['FuelTemp'])
+    single_class = 'active'
 
     # Validation for inputs
-    if max_weight <= 0.0 or truck_trailer_weight <= 0.0:
+    if max_weight <= truck_trailer_weight:
+        flash("Truck and trailer weight must be less than max weight.", "error")
         return render_template('fuel_calculator.html', max_weight = int(max_weight), truck_trailer_weight = int(truck_trailer_weight), 
-                            fuel_density = fuel_density, fuel_temp = fuel_temp)
-    elif max_weight <= truck_trailer_weight:
-        return render_template('fuel_calculator.html', max_weight = int(max_weight), truck_trailer_weight = int(truck_trailer_weight), 
-                            fuel_density = fuel_density, fuel_temp = fuel_temp)
-    if fuel_density <= 0.0:
-        return render_template('fuel_calculator.html', max_weight = int(max_weight), truck_trailer_weight = int(truck_trailer_weight), 
-                            fuel_density = fuel_density, fuel_temp = fuel_temp)
-    elif fuel_density < 100.0 or fuel_density > 1000.0:
-        return render_template('fuel_calculator.html', max_weight = int(max_weight), truck_trailer_weight = int(truck_trailer_weight), 
-                            fuel_density = fuel_density, fuel_temp = fuel_temp)
-    if fuel_temp < -50.0 or fuel_temp > 50.0:
-        return render_template('fuel_calculator.html', max_weight = int(max_weight), truck_trailer_weight = int(truck_trailer_weight), 
-                            fuel_density = fuel_density, fuel_temp = fuel_temp)
+                            fuel_density = fuel_density, fuel_temp = fuel_temp, single_class = single_class)
 
     # Calculate kg available to carry
     available_weight = max_weight - truck_trailer_weight
@@ -51,19 +40,103 @@ def calculation():
     gross_literage = net_literage / correction
 
     # Return the variables
-    return render_template(
-        'fuel_calculator.html',
-        max_weight = int(np.round(max_weight, 0)),
-        truck_trailer_weight = int(np.round(truck_trailer_weight, 0)),
-        fuel_density = np.round(fuel_density, 1),
-        fuel_temp = np.round(fuel_temp, 2),
-        available_weight = int(np.round(available_weight, 0)),
-        net_literage = int(np.round(net_literage, 0)),
-        correction = np.round(correction, 4),
-        gross_literage = int(np.round(gross_literage, 0)),
-        calculation_success = True
+    return render_template('fuel_calculator.html',
+                           max_weight = int(max_weight),
+                           truck_trailer_weight = int(truck_trailer_weight),
+                           fuel_density = fuel_density,
+                           fuel_temp = fuel_temp,
+                           available_weight = int(available_weight),
+                           net_literage = int(np.round(net_literage, 0)),
+                           correction = np.round(correction, 4),
+                           gross_literage = int(np.round(gross_literage, 0)),
+                           single_class = single_class,
+                           calculation_success_single = True
     )
     
+# End of function definition
+
+@Flask_App.route('/calculate-spreadsheet/', methods = ['POST'])
+def calculate_spreadsheet():
+
+    # request.form looks for:
+    # html tags with matching "name= "
+    max_weight = float(request.form['MaxWeight'])
+    truck_trailer_weight = float(request.form['TandT'])  
+    fuel_density_min = float(request.form['FuelDensityMin'])
+    fuel_density_max = float(request.form['FuelDensityMax'])
+    fuel_density_step = float(request.form['FuelDensityStep'])
+    fuel_temp_min = float(request.form['FuelTempMin'])
+    fuel_temp_max = float(request.form['FuelTempMax'])
+    fuel_temp_step = float(request.form['FuelTempStep'])
+    spread_class = 'active'
+
+    # Validation for inputs
+    if max_weight <= truck_trailer_weight:
+        flash("Truck and trailer weight must be less than max weight.", "error")
+        return render_template('fuel_calculator.html', max_weight = int(max_weight), truck_trailer_weight = int(truck_trailer_weight), fuel_density_min = fuel_density_min,
+                               fuel_density_max = fuel_density_max, fuel_density_step = fuel_density_step, fuel_temp_min = fuel_temp_min,
+                               fuel_temp_max = fuel_temp_max, fuel_temp_step = fuel_temp_step, spread_class = spread_class)
+    if fuel_density_max <= fuel_density_min or fuel_temp_max <= fuel_temp_min:
+        flash("Maximum values must be greater than minimum values.", "error")
+        return render_template('fuel_calculator.html', max_weight = int(max_weight), truck_trailer_weight = int(truck_trailer_weight), fuel_density_min = fuel_density_min,
+                               fuel_density_max = fuel_density_max, fuel_density_step = fuel_density_step, fuel_temp_min = fuel_temp_min,
+                               fuel_temp_max = fuel_temp_max, fuel_temp_step = fuel_temp_step, spread_class = spread_class)
+    if fuel_density_step > (fuel_density_max - fuel_density_min) or fuel_temp_step > (fuel_temp_max - fuel_temp_min):
+        flash("Step sizes must be smaller for the values considered.", "error")
+        return render_template('fuel_calculator.html', max_weight = int(max_weight), truck_trailer_weight = int(truck_trailer_weight), fuel_density_min = fuel_density_min,
+                               fuel_density_max = fuel_density_max, fuel_density_step = fuel_density_step, fuel_temp_min = fuel_temp_min,
+                               fuel_temp_max = fuel_temp_max, fuel_temp_step = fuel_temp_step, spread_class = spread_class)
+
+    # Create the density and temperature lists
+    densities = np.arange(fuel_density_min, fuel_density_max + fuel_density_step, fuel_density_step)
+    temperatures = np.arange(fuel_temp_min, fuel_temp_max + fuel_temp_step, fuel_temp_step)
+
+    # Filter out values greater than max
+    densities = densities[densities <= fuel_density_max]
+    temperatures = temperatures[temperatures <= fuel_temp_max]
+
+    # Valdiate the size of the output table
+    if len(densities) > 20 or len(temperatures) > 20:
+        flash("Output spreadsheet contains too many entries.", "error")
+        return render_template('fuel_calculator.html', max_weight = int(max_weight), truck_trailer_weight = int(truck_trailer_weight), fuel_density_min = fuel_density_min,
+                               fuel_density_max = fuel_density_max, fuel_density_step = fuel_density_step, fuel_temp_min = fuel_temp_min,
+                               fuel_temp_max = fuel_temp_max, fuel_temp_step = fuel_temp_step, spread_class = spread_class)
+    
+    # Calculate kg available to carry
+    available_weight = max_weight - truck_trailer_weight
+    
+    # Loop through each entry
+    output = np.zeros((len(temperatures), len(densities)), dtype = int)
+    for i in range(0, len(temperatures)):
+        for j in range(0, len(densities)):
+
+            # Calculate gross literage
+            net_literage = (available_weight / densities[j]) * 1000.0
+            gross_literage = net_literage / VCF(densities[j], temperatures[i])
+
+            # Update the table
+            output[i, j] = int(np.round(gross_literage, 0))
+
+        # End of for loop
+    # End of for loop
+
+    # Return the variables
+    return render_template('fuel_calculator.html', 
+                           max_weight = int(max_weight), 
+                           truck_trailer_weight = int(truck_trailer_weight), 
+                           fuel_density_min = fuel_density_min,
+                           fuel_density_max = fuel_density_max,
+                           fuel_density_step = fuel_density_step,
+                           fuel_temp_min = fuel_temp_min,
+                           fuel_temp_max = fuel_temp_max,
+                           fuel_temp_step = fuel_temp_step,
+                           temperatures = temperatures,
+                           densities = densities,
+                           literage = output.tolist(),
+                           spread_class = spread_class,
+                           calculation_success_spread = True
+    )
+
 # End of function definition
 
 # Define a function to calculate the volume correction factor

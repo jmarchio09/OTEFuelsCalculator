@@ -6,7 +6,6 @@ body {
     align-items: center;
     height: 100vh;
     margin: 0;
-    overflow: auto;
 }
 
 .container {
@@ -20,13 +19,14 @@ body {
     flex-direction: column;
     align-items: center;
     max-height: 90vh;
-    overflow-y: auto;
+    overflow: auto;
 }
 
 .error {
     color: red;
     font-size: 0.9em;
     margin-top: 5px;
+    text-align: center;
 }
 
 form {
@@ -43,13 +43,14 @@ label {
 }
 
 input[type="number"], input[type="submit"] {
-    width: 90%;
+    width: 95%;
     padding: 10px;
     margin: 5px 0;
     border: 1px solid #ccc;
     border-radius: 5px;
     text-align: center;
     font-size: 0.9em;
+    box-sizing: border-box;
 }
 
 input[type="number"]:focus, textarea:focus {
@@ -59,18 +60,29 @@ input[type="number"]:focus, textarea:focus {
 
 input[type="submit"] {
     background-color: #0d803f;
+    border-color: #0d803f;
     color: white;
     cursor: pointer;
     margin-top: 20px;
+    font-weight: bold;
 }
 
-.result {
-    width: 90%;
+.result_single {
+    width: 95%;
     background: #e9ecef;
     padding: 10px;
     margin-top: 20px;
     border-radius: 5px;
     text-align: left;
+    box-sizing: border-box;
+}
+
+.result_single p {
+    padding-left: 10px; /* Adjust as needed */
+}
+
+.result_single hr {
+    margin-left: 0; /* Ensures the divider stays aligned */
 }
 
 /* Divider line between sections */
@@ -83,16 +95,105 @@ input[type="submit"] {
     width: 100%; /* Ensures the line stretches across the form */
 }
 
-.result p {
-    padding-left: 10px; /* Adjust as needed */
-}
-
-.result hr {
-    margin-left: 0; /* Ensures the divider stays aligned */
-}
-
 .logo {
     display: block;
     margin: 0 auto -20px; /* Center the logo and give some space below */
     height: auto;
+}
+
+/* Initially hide forms with the 'hidden' class */
+.hidden {
+    display: none;
+}
+
+/* Fix toggle buttons */
+.toggle-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+.toggle-btn {
+    padding: 10px 20px;
+    margin-left: 10px;
+    margin-right: 5px;
+    border: none;
+    border-radius: 5px;
+    box-sizing: border-box;
+    background-color: #e9ecef;
+    color: black;
+    cursor: pointer;
+    flex: 1;
+    text-align: center;
+    transition: 0.0s;
+    font-size: inherit;
+}
+
+.toggle-btn.active {
+    background-color: #0d803f;
+    color: white;
+    font-weight: bold;
+}
+
+/* Style for the range group container */
+.range-group {
+    display: flex;
+    gap: 15px; /* Space between inputs */
+    justify-content: space-between; /* Distribute inputs evenly */
+    width: 95%; /* Ensure the container takes full width */
+    box-sizing: border-box;
+}
+
+ /* Set the desired height */
+ .table-container {
+    max-height: 331.5px;  
+}
+
+/* Allow the table to scroll horizontally and vertically */
+table {
+    max-height: 331.5px;           /* Ensure it fits within the parent container */
+    max-width: 409.5px;                /* Table takes full width */
+    display: block;             /* Required to enable scrolling for table */
+    position: static;
+    table-layout: fixed;         /* Automatically adjust column width */
+    overflow-x: auto;           /* Enable horizontal scrolling */
+    overflow-y: auto;           /* Enable vertical scrolling */
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling for mobile */
+    margin-top: 20px;
+    text-align: center;
+    border-collapse: separate; /* Ensures borders overlap */
+}
+
+/* Center all text */
+th, td {
+    min-width: 100px;
+    text-align: center;
+    vertical-align: middle;
+    border: 1px solid black; /* Add borders to all cells */
+    padding: 10px; /* Adjust padding if needed */
+    white-space: nowrap; /* Prevents text wrapping */
+}
+
+/* Make headers bold */
+.density-header {
+    min-width: 100px;
+    font-weight: bold;
+    background-color: #e9ecef;
+    color: black;
+    position: sticky;
+    top: 0; /* Stick to the top when scrolling */
+    z-index: 2; /* Ensure headers stay above other elements */
+    background-clip: padding-box; /* Prevents visual gaps */
+}
+
+/* Make headers bold */
+.temperature-header {
+    min-width: 100px;
+    font-weight: bold;
+    background-color: #e9ecef;
+    color: black;
+    position: sticky;
+    left: 0; /* Stick to the left when scrolling */
+    z-index: 2; /* Ensure headers stay above other elements */
+    background-clip: padding-box; /* Prevents visual gaps */
 }
