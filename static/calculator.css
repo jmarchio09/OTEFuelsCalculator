@@ -166,7 +166,7 @@ table {
 
 /* Center all text */
 th, td {
-    min-width: 115px;
+    min-width: 113px;
     text-align: center;
     vertical-align: middle;
     border: 1px solid black; /* Add borders to all cells */
@@ -176,7 +176,7 @@ th, td {
 
 /* Make headers bold */
 .density-header {
-    min-width: 115px;
+    min-width: 113px;
     font-weight: bold;
     background-color: #e9ecef;
     color: black;
@@ -188,7 +188,7 @@ th, td {
 
 /* Make headers bold */
 .temperature-header {
-    min-width: 115px;
+    min-width: 113px;
     font-weight: bold;
     background-color: #e9ecef;
     color: black;
@@ -217,6 +217,7 @@ button[type="submit"] {
 
 /* Print-specific styles */
 @media print {
+
     /* Hide everything except the table */
     body * {
         visibility: hidden;
@@ -233,7 +234,11 @@ button[type="submit"] {
         top: 0;
         overflow-x: visible;           /* Enable horizontal scrolling */
         overflow-y: visible;           /* Enable vertical scrolling */
-        page-break-inside: auto; /* Allow table to break across pages */
-        page-break-before: always; /* Force a page break before the table */
     }
+
+    @page {
+        margin: 0.25in;
+        size: landscape;
+      }
 }
+

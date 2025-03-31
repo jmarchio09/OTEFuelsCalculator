@@ -95,9 +95,12 @@ def calculate_spreadsheet():
     densities = densities[densities <= fuel_density_max]
     temperatures = temperatures[temperatures <= fuel_temp_max]
 
+    # Reverse the densities in the table
+    densities = np.flip(densities, axis = 0)
+
     # Valdiate the size of the output table
-    if len(densities) > 20 or len(temperatures) > 20:
-        flash("Output spreadsheet contains too many entries.", "error")
+    if len(densities) > 10 or len(temperatures) > 20:
+        flash("Maximum spreadsheet size is 20 temperatures by 10 densities.", "error")
         return render_template('fuel_calculator.html', max_weight = int(max_weight), truck_trailer_weight = int(truck_trailer_weight), fuel_density_min = fuel_density_min,
                                fuel_density_max = fuel_density_max, fuel_density_step = fuel_density_step, fuel_temp_min = fuel_temp_min,
                                fuel_temp_max = fuel_temp_max, fuel_temp_step = fuel_temp_step, spread_class = spread_class)
