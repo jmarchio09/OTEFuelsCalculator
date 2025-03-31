@@ -81,11 +81,11 @@
         <!-- Spreadsheet Mode Form -->
         <form id="spreadsheet_form" class="{% if spread_class != 'active' %}hidden{% endif %}" method="post" action="{{ url_for('calculate_spreadsheet') }}" autocomplete="off">
 
-            <label for="MaxWeight">Max Weight (kg):</label>
+            <label for="MaxWeight" id="MaxWeightLabel">Max Weight (kg):</label>
             <input type="number" name="MaxWeight" id="MaxWeight" step="1" min="0" max="1000000"
             required autocomplete="off" value="{{ max_weight if max_weight is not none else '' }}">
             
-            <label for="TandT">Truck & Trailer Tare Weight (kg):</label>
+            <label for="TandT" id="TandTLabel">Truck & Trailer Tare Weight (kg):</label>
             <input type="number" name="TandT" id="TandT" step="1" min="0" max="1000000"
             required autocomplete="off" value="{{ truck_trailer_weight if truck_trailer_weight is not none else '' }}">
 

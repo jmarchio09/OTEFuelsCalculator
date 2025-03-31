@@ -227,13 +227,42 @@ button[type="submit"] {
         visibility: visible;
     }
 
-    /* Position the table at the top of the page */
     #OutputTable {
         position: absolute;
         left: 0;
-        top: 0;
+        top: 150px;
         overflow-x: visible;           /* Enable horizontal scrolling */
         overflow-y: visible;           /* Enable vertical scrolling */
+    }
+
+    #MaxWeight, #MaxWeightLabel {
+        visibility: visible;
+        position: absolute;
+        left: 25px;
+        top: 50px;
+        font-size: 1.2em;
+    }
+
+    #MaxWeight {
+        left: 200px;
+        top: 46px;
+        width: 150px;
+        border: 0px;
+    }
+
+    #TandT, #TandTLabel {
+        visibility: visible;
+        position: absolute;
+        left: 25px;
+        top: 100px;
+        font-size: 1.2em;
+    }
+
+    #TandT {
+        left: 325px;
+        top: 96px;
+        width: 150px;
+        border: 0px;
     }
 
     @page {
