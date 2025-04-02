@@ -143,7 +143,7 @@ def calculate_spreadsheet():
 # End of function definition
 
 # Define a function to calculate the volume correction factor
-# given a density and temperature (in g/m^3 and C) respectively
+# given a density and temperature (in g/cm^3 and C) respectively
 # Note: This assumes a known density at 15°C
 def VCF(density, temperature):
 
